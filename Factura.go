@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-func datos_cliente() {
+func datos_cliente() string {
 	var cliente string
 	fmt.Println("Ingrese el nombre del cliente: ")
 	fmt.Scan(&cliente)
-	fmt.Println("Nombre del cliente: ", cliente)
+	return cliente
 }
 
-func compras() {
+func compras() ([]string, []float64, float64) {
 	var opcion string
 	var productos []string
 	var precios []float64
@@ -32,7 +32,6 @@ func compras() {
 		fmt.Scan(&precio)
 		precios = append(precios, precio)
 
-
 		fmt.Println("Ingrese la cantidad del producto: ")
 		fmt.Scan(&cant_producto)
 
@@ -46,26 +45,48 @@ func compras() {
 			break
 		}
 	}
-	fmt.Println("Sus productos son: ", productos)
-	fmt.Println("los precios son: ", precios)
-	fmt.Println("Valor total de la compra: $", valor_total)
-	fmt.Println("Gracias por su compra!")
+	return productos, precios, valor_total
 }
 
-func Factura() {
-	datos_cliente()
-	compras()
+func Factura() (string, []string, []float64, float64) {
+	cliente := datos_cliente()
+	productos, precios, valor_total := compras()
+	return cliente, productos, precios, valor_total
+}
+
+func generarPDF(cliente string, productos []string, precios []float64, valor_total float64) {
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddPage()
+	pdf.SetFont("Arial", "B", 16)
+	pdf.Cell(40, 10, "Factura")
+	pdf.Ln(10) // Salto de línea
+
+	pdf.SetFont("Arial", "", 12)
+	pdf.Cell(40, 10, fmt.Sprintf("Cliente: %s", cliente))
+	pdf.Ln(10)
+
+	pdf.Cell(40, 10, "Productos:")
+	pdf.Ln(10)
+
+	for i, producto := range productos {
+		pdf.Cell(0, 10, fmt.Sprintf("%s - $%.2f", producto, precios[i]))
+		pdf.Ln(10)
+	}
+
+	pdf.Ln(10)
+	pdf.Cell(40, 10, fmt.Sprintf("Valor total de la compra: $%.2f", valor_total))
+
+	err := pdf.OutputFileAndClose("FacturaGO.pdf")
+	if err != nil {
+		fmt.Println("Error al generar el PDF:", err)
+	}
 }
 
 func main() {
 	t := time.Now()
-	Factura()
+	cliente, productos, precios, valor_total := Factura()
 	fmt.Println("Fecha y hora: ", t.Format("2006-01-02 15:04:05"))
 	fmt.Println("Generando PDF...")
-	pdf := gofpdf.New("P", "mm", "A4", "")
-	pdf.AddPage()
-	pdf.SetFont("Arial", "B", 16)
-	pdf.Cell(40, 10, "Factura()")
-	err := pdf.OutputFileAndClose("Factura.pdf")
-	fmt.Println(err)
+	generarPDF(cliente, productos, precios, valor_total)
+	fmt.Println("PDF generado con éxito: Prueba.pdf")
 }
