@@ -90,7 +90,7 @@ func generarPDF(cliente string, productos []string, precios, cantidades []float6
 	pdf.SetFont("Arial", "B", 12)        // Cambia la fuente a Arial negrita, tamaño 12.
 	// Añade las columnas de la tabla: Ref, Descripción, Cantidad, Precio, Importe.
 	pdf.CellFormat(10, 7, "Ref", "1", 0, "C", false, 0, "") 
-	pdf.CellFormat(80, 7, "Descripción", "1", 0, "C", false, 0, "")
+	pdf.CellFormat(80, 7, "Descripcion", "1", 0, "C", false, 0, "")
 	pdf.CellFormat(20, 7, "Cantidad", "1", 0, "C", false, 0, "")
 	pdf.CellFormat(30, 7, "Precio", "1", 0, "C", false, 0, "")
 	pdf.CellFormat(30, 7, "Importe", "1", 0, "C", false, 0, "")
